@@ -2,10 +2,16 @@
 Code shared between the phone app and pi program
 
 ## Setup
-Edit your project's module `.iml` file by adding `<sourceFolder url="file://$MODULE_DIR$/src/shared/src/main/java" isTestSource="false" />` to the section with loads of other `sourceFolder`
- entries.
+Edit your project's module `.iml` file by adding 
+
+```
+<sourceFolder url="file://$MODULE_DIR$/src/shared/src/main/java" isTestSource="false" />
+<sourceFolder url="file://$MODULE_DIR$/src/shared/src/main/resources" type="java-resource" />
+```
+
+to the section with loads of other `sourceFolder` entries.
  
-For the phone app, this file is `app/app.iml`.
+For the phone app, this file is `app/app.iml` and for the pi program this is `cane-pi.iml`.
 
 Here is an edited `.iml` file with the added sourceFolder entry
 ![memes](https://image.prntscr.com/image/IOj0Gpt5TWKiri2qI1_QxQ.png)
