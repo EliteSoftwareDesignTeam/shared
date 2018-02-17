@@ -4,10 +4,7 @@ import com.teamness.smane.Pair;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by samtebbs on 13/02/2018.
@@ -20,6 +17,7 @@ public class EventChannel {
     }
 
     public EventPriority defaultPriority = EventPriority.MEDIUM;
+    public final List<EventChannel> parents;
 
     private final Map<Class<? extends Event>, Map<EventPriority, List<Pair<Method, Object>>>> subscribers = new HashMap<>();
     private final Map<EventPriority, List<Pair<Method, Object>>> defaultSubscribers = new HashMap<EventPriority, List<Pair<Method,Object>>>() {{
@@ -30,8 +28,10 @@ public class EventChannel {
 
     }
 
-    public EventChannel(EventPriority priority, EventChannel... parentChannels) {
-        for(EventChannel parent : parentChannels) parent.onAny(priority, "trigger", this);
+    public EventChannel(EventPriority defaultPriority, EventPriority parentPriority, EventChannel... parentChannels) {
+        this.parents = Arrays.asList(parentChannels);
+        this.defaultPriority = defaultPriority;
+        for(EventChannel parent : parents) parent.onAny(parentPriority, "trigger", this);
     }
 
     /**
@@ -47,6 +47,7 @@ public class EventChannel {
             }
         }
         for(EventPriority priority : EventPriority.values()) for(Pair<Method, Object> consumer : defaultSubscribers.get(priority)) invoke(consumer, event);
+        for(EventChannel parent : parents) parent.trigger(event);
     }
 
     private <T extends Event> void invoke(Pair<Method, Object> consumer, T event) {
