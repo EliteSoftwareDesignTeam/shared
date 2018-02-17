@@ -16,7 +16,8 @@ public class EventChannel {
         HIGH, MEDIUM, LOW
     }
 
-    public EventPriority defaultPriority = EventPriority.MEDIUM;
+    public EventPriority defaultPriority;
+
     public final List<EventChannel> parents;
 
     private final Map<Class<? extends Event>, Map<EventPriority, List<Pair<Method, Object>>>> subscribers = new HashMap<>();
@@ -25,7 +26,11 @@ public class EventChannel {
     }};
 
     public EventChannel() {
+        this(EventPriority.MEDIUM);
+    }
 
+    public EventChannel(EventPriority defaultPriority) {
+        this(defaultPriority, defaultPriority);
     }
 
     public EventChannel(EventPriority defaultPriority, EventPriority parentPriority, EventChannel... parentChannels) {
