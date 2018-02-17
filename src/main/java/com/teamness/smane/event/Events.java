@@ -1,5 +1,7 @@
 package com.teamness.smane.event;
 
+import com.teamness.smane.Pair;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -18,6 +20,9 @@ public class Events {
     }
 
     private static final Map<Class<? extends Event>, Map<EventPriority, List<Pair<Method, Object>>>> subscribers = new HashMap<>();
+    private static final Map<EventPriority, List<Pair<Method, Object>>> defaultSubscribers = new HashMap<EventPriority, List<Pair<Method,Object>>>() {{
+        for(EventPriority p : EventPriority.values()) put(p, new ArrayList<>());
+    }};
 
     /**
      * Trigger an event and its listeners
@@ -30,8 +35,8 @@ public class Events {
             for(EventPriority priority : EventPriority.values()) {
                 for(Pair<Method, Object> consumer : consumers.get(priority)) invoke(consumer, event);
             }
-
         }
+        for(EventPriority priority : EventPriority.values()) for(Pair<Method, Object> consumer : defaultSubscribers.get(priority)) invoke(consumer, event);
     }
 
     private static <T extends Event> void invoke(Pair<Method, Object> consumer, T event) {
@@ -57,12 +62,19 @@ public class Events {
         else {
             Map<EventPriority, List<Pair<Method, Object>>> map = new HashMap<EventPriority, List<Pair<Method, Object>>>() {{
                 for(EventPriority priority : EventPriority.values()) {
-                    put(priority, new ArrayList<Pair<Method, Object>>());
+                    put(priority, new ArrayList<>());
                 }
             }};
             map.get(priority).add(consumer);
             subscribers.put(eventClass, map);
         }
+        return true;
+    }
+
+    public boolean onAny(EventPriority priority, String method, Object caller) {
+        Pair<Method, Object> consumer = newConsumer(caller, method, Event.class);
+        if(consumer == null) return false;
+        defaultSubscribers.get(priority).add(consumer);
         return true;
     }
 
