@@ -13,14 +13,14 @@ import java.util.Map;
  * Created by samtebbs on 13/02/2018.
  */
 
-public class Events {
+public class EventChannel {
 
     public enum EventPriority {
         HIGH, MEDIUM, LOW
     }
 
-    private static final Map<Class<? extends Event>, Map<EventPriority, List<Pair<Method, Object>>>> subscribers = new HashMap<>();
-    private static final Map<EventPriority, List<Pair<Method, Object>>> defaultSubscribers = new HashMap<EventPriority, List<Pair<Method,Object>>>() {{
+    private final Map<Class<? extends Event>, Map<EventPriority, List<Pair<Method, Object>>>> subscribers = new HashMap<>();
+    private final Map<EventPriority, List<Pair<Method, Object>>> defaultSubscribers = new HashMap<EventPriority, List<Pair<Method,Object>>>() {{
         for(EventPriority p : EventPriority.values()) put(p, new ArrayList<>());
     }};
 
@@ -29,7 +29,7 @@ public class Events {
      * @param event the event to trigger
      * @param <T> the type of the event
      */
-    public static <T extends Event> void trigger(T event) {
+    public <T extends Event> void trigger(T event) {
         if(subscribers.containsKey(event.getClass())) {
             Map<EventPriority, List<Pair<Method, Object>>> consumers = subscribers.get(event.getClass());
             for(EventPriority priority : EventPriority.values()) {
@@ -39,7 +39,7 @@ public class Events {
         for(EventPriority priority : EventPriority.values()) for(Pair<Method, Object> consumer : defaultSubscribers.get(priority)) invoke(consumer, event);
     }
 
-    private static <T extends Event> void invoke(Pair<Method, Object> consumer, T event) {
+    private <T extends Event> void invoke(Pair<Method, Object> consumer, T event) {
         try {
             consumer.first.invoke(consumer.second, event);
         } catch (IllegalAccessException | InvocationTargetException e) {
@@ -55,7 +55,7 @@ public class Events {
      * @param caller the object to call the method from
      * @param <T> the type of the event
      */
-    public static <T extends Event> boolean on(EventPriority priority, Class<T> eventClass, String method, Object caller) {
+    public <T extends Event> boolean on(EventPriority priority, Class<T> eventClass, String method, Object caller) {
         Pair<Method, Object> consumer = newConsumer(caller, method, eventClass);
         if(consumer == null) return false;
         if(subscribers.containsKey(eventClass)) subscribers.get(eventClass).get(priority).add(consumer);
@@ -86,7 +86,7 @@ public class Events {
      * @param <T> the type of the event
      * @return null if a consumer pair can't be created (no methods with that name and parameter class), else the new consumer pair
      */
-    public static <T extends Event> Pair<Method, Object> newConsumer(Object caller, String methodName, Class<T> eventClass) {
+    public <T extends Event> Pair<Method, Object> newConsumer(Object caller, String methodName, Class<T> eventClass) {
         if(caller != null) {
             try {
                 Method method = caller.getClass().getMethod(methodName, eventClass);
@@ -97,13 +97,13 @@ public class Events {
     }
 
     /**
-     * Same as {@link Events#on(EventPriority, Class, String, Object)} but with medium priority
+     * Same as {@link EventChannel#on(EventPriority, Class, String, Object)} but with medium priority
      * @param eventClass the class of the event to listen for
      * @param method the method name to invoke when the event is triggered
      * @param caller the object to call the method from
      * @param <T> the type of the event
      */
-    public static <T extends Event> boolean on(Class<T> eventClass, String method, Object caller) {
+    public <T extends Event> boolean on(Class<T> eventClass, String method, Object caller) {
         return on(EventPriority.MEDIUM, eventClass, method, caller);
     }
 
