@@ -24,6 +24,14 @@ public class EventChannel {
         for(EventPriority p : EventPriority.values()) put(p, new ArrayList<>());
     }};
 
+    public EventChannel() {
+
+    }
+
+    public EventChannel(EventPriority priority, EventChannel... parentChannels) {
+        for(EventChannel parent : parentChannels) parent.onAny(priority, "trigger", this);
+    }
+
     /**
      * Trigger an event and its listeners
      * @param event the event to trigger
