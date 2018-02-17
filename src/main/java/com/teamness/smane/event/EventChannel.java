@@ -36,7 +36,7 @@ public class EventChannel {
     public EventChannel(EventPriority defaultPriority, EventPriority parentPriority, EventChannel... parentChannels) {
         this.parents = Arrays.asList(parentChannels);
         this.defaultPriority = defaultPriority;
-        for(EventChannel parent : parents) parent.onAny(parentPriority, "trigger", this);
+        for(EventChannel parent : parents) parent.onAny(parentPriority, "triggerChild", this);
     }
 
     /**
@@ -45,6 +45,11 @@ public class EventChannel {
      * @param <T> the type of the event
      */
     public <T extends Event> void trigger(T event) {
+        triggerChild(event);
+        for(EventChannel parent : parents) parent.trigger(event);
+    }
+
+    private <T extends Event> void triggerChild(T event) {
         if(subscribers.containsKey(event.getClass())) {
             Map<EventPriority, List<Pair<Method, Object>>> consumers = subscribers.get(event.getClass());
             for(EventPriority priority : EventPriority.values()) {
@@ -52,7 +57,6 @@ public class EventChannel {
             }
         }
         for(EventPriority priority : EventPriority.values()) for(Pair<Method, Object> consumer : defaultSubscribers.get(priority)) invoke(consumer, event);
-        for(EventChannel parent : parents) parent.trigger(event);
     }
 
     private <T extends Event> void invoke(Pair<Method, Object> consumer, T event) {
