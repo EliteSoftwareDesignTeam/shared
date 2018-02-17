@@ -19,6 +19,8 @@ public class EventChannel {
         HIGH, MEDIUM, LOW
     }
 
+    public EventPriority defaultPriority = EventPriority.MEDIUM;
+
     private final Map<Class<? extends Event>, Map<EventPriority, List<Pair<Method, Object>>>> subscribers = new HashMap<>();
     private final Map<EventPriority, List<Pair<Method, Object>>> defaultSubscribers = new HashMap<EventPriority, List<Pair<Method,Object>>>() {{
         for(EventPriority p : EventPriority.values()) put(p, new ArrayList<>());
@@ -112,7 +114,7 @@ public class EventChannel {
      * @param <T> the type of the event
      */
     public <T extends Event> boolean on(Class<T> eventClass, String method, Object caller) {
-        return on(EventPriority.MEDIUM, eventClass, method, caller);
+        return on(defaultPriority, eventClass, method, caller);
     }
 
 }
