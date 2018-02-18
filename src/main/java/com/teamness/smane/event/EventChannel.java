@@ -91,6 +91,13 @@ public class EventChannel {
         return true;
     }
 
+    /**
+     * Register an event listener that is called when any event type is triggered
+     * @param priority the listener's priority
+     * @param method the name of the method to invoke when the event is triggered
+     * @param caller the object to call the method from
+     * @return
+     */
     public boolean onAny(EventPriority priority, String method, Object caller) {
         Pair<Method, Object> consumer = newConsumer(caller, method, Event.class);
         if(consumer == null) return false;
