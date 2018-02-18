@@ -12,7 +12,7 @@ public class Handleable<F, T> {
         handlers.add(new Pair<>(converter, handler));
     }
 
-    private void handle(F data) {
+    protected void handle(F data) {
         handlers.forEach(p -> p.second.accept(p.first.apply(data)));
     }
 
