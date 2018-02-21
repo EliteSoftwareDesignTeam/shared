@@ -22,7 +22,7 @@ public class EventChannel {
 
     private final Map<Class<? extends Event>, Map<EventPriority, List<Pair<Method, Object>>>> subscribers = new HashMap<>();
     private final Map<EventPriority, List<Pair<Method, Object>>> defaultSubscribers = new HashMap<EventPriority, List<Pair<Method,Object>>>() {{
-        for(EventPriority p : EventPriority.values()) put(p, new ArrayList<>());
+        for(EventPriority p : EventPriority.values()) put(p, new ArrayList<Pair<Method, Object>>());
     }};
 
     public EventChannel() {
@@ -82,7 +82,7 @@ public class EventChannel {
         else {
             Map<EventPriority, List<Pair<Method, Object>>> map = new HashMap<EventPriority, List<Pair<Method, Object>>>() {{
                 for(EventPriority priority : EventPriority.values()) {
-                    put(priority, new ArrayList<>());
+                    put(priority, new ArrayList<Pair<Method, Object>>());
                 }
             }};
             map.get(priority).add(consumer);
