@@ -61,7 +61,8 @@ public class EventChannel {
 
     private <T extends Event> void invoke(Pair<Method, Object> consumer, T event) {
         try {
-            consumer.first.invoke(consumer.second, event);
+            Method method = consumer.first;
+            method.invoke(consumer.second, event);
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
@@ -116,8 +117,10 @@ public class EventChannel {
     public <T extends Event> Pair<Method, Object> newConsumer(Object caller, String methodName, Class<T> eventClass) {
         if(caller != null) {
             try {
-                Method method = caller.getClass().getMethod(methodName, eventClass);
-                return new Pair<>(method, caller);
+                boolean isStatic = caller instanceof Class;
+                Class<?> callerClass = isStatic ? (Class<?>) caller : caller.getClass();
+                Method method = callerClass.getMethod(methodName, eventClass);
+                return new Pair<>(method, isStatic ? null : caller);
             } catch (NoSuchMethodException ignored) {}
         }
         return null;
