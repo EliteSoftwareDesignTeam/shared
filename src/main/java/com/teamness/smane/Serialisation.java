@@ -1,13 +1,13 @@
 package com.teamness.smane;
 
-import javax.xml.bind.DatatypeConverter;
 import java.io.*;
-import java.util.Base64;
 
 public class Serialisation {
 
+    public static Base64Provider base64Provider;
+
     public static Object toObject(String str) throws IOException, ClassNotFoundException {
-        byte[] bytes = DatatypeConverter.parseBase64Binary(str);
+        byte[] bytes = base64Provider.decode(str);
         return deserialiseBytes(bytes);
     }
 
@@ -22,7 +22,7 @@ public class Serialisation {
 
     public static String fromObject(Serializable obj) throws IOException {
         byte[] serialised = serialiseObject(obj);
-        return DatatypeConverter.printBase64Binary(serialised);
+        return base64Provider.encode(serialised);
     }
 
     public static byte[] serialiseObject(Serializable obj) {
