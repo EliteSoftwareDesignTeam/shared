@@ -1,6 +1,6 @@
 package com.teamness.smane.event;
 
-public class ButtonEvent {
+public class ButtonEvent extends Event {
 
     public final ButtonAction action;
 
