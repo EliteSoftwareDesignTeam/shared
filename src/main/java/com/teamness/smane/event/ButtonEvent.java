@@ -1,10 +1,10 @@
 package com.teamness.smane.event;
 
-public class ButttonEvent {
+public class ButtonEvent {
 
     public final ButtonAction action;
 
-    public ButttonEvent(ButtonAction action) {
+    public ButtonEvent(ButtonAction action) {
         this.action = action;
     }
 
